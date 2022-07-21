@@ -77,7 +77,7 @@ def tf_dataset(X, y):
     ds = tf.data.Dataset.from_tensor_slices((X, y))
     ds = ds.map(process, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.shuffle(buffer_size=1000)
-    ds = ds.batch(batch_size=32)
+    ds = ds.batch(batch_size=1)
     ds = ds.prefetch(buffer_size=tf.data.AUTOTUNE)
     return ds
 

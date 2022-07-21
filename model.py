@@ -1,6 +1,9 @@
 import segmentation_models as sm
 import tensorflow as tf
 
+sm.set_framework("tf.keras")
+sm.framework()
+
 
 def create_model():
     model = sm.Unet("resnet34", classes=3, activation="sigmoid")
