@@ -1,0 +1,5 @@
+
+sm.set_framework("tf.keras")
+sm.framework()
+
+useful to not have to modify the package it self
