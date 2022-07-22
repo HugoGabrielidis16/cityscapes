@@ -4,6 +4,10 @@ from model import create_model
 from data import load_dataset
 from config import Config
 
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.compat.v1.Session(config=config)
+
 if __name__ == "__main__":
     strategy = tf.distribute.MirroredStrategy()
     config = Config("RESUNET")
