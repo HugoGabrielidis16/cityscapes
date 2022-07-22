@@ -1,5 +1,3 @@
-import wandb
-from wandb.keras import WandbCallback
 import tensorflow as tf
 
 dict = {
