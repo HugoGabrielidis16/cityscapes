@@ -1,5 +1,3 @@
-from distutils.command.config import config
-from distutils.file_util import copy_file
 from model import create_model
 from data import load_dataset
 from config import Config
