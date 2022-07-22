@@ -3,6 +3,11 @@ from distutils.file_util import copy_file
 from model import create_model
 from data import load_dataset
 from config import Config
+import tensorflow as tf
+
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.compat.v1.Session(config=config)
 
 if __name__ == "__main__":
     config = Config("RESUNET")
