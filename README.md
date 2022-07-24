@@ -10,3 +10,8 @@ Idea : set batch_size to 1
 
 Resolved : - Error : keras_utils have no methods get_file :
 -> from tensorflow.keras.utils import get_file + keras.utils.get_gile -> get_file
+
+
+>>> Output has to be of shape (256,256,13) #13 the number of classes
+-> Idea each color of the original image has to be shape to one of the 13 dimensions : examples blue = [1,0,0,0,0,...]
+                    purple = [0,1,0,0...]

@@ -1,8 +1,12 @@
+from hashlib import new
 import matplotlib.pyplot as plt
 from random import randint
 import seaborn as sns
 import numpy as np
 from PIL import Image
+import tensorflow as tf
+from tqdm import tqdm
+
 
 WIDTH = 256
 HEIGHT = 256
@@ -31,7 +35,11 @@ def show_some_images(images, masks):
 
 
 def loadImage(path):
+    """
+    Separate the original image in two : the image and the masks
+    """
     img = Image.open(path)
+    # img = tf.image.decode_jpeg(path)
     img = np.array(img)
     image = img[:, :256]
     mask = img[:, 256:]
@@ -39,18 +47,39 @@ def loadImage(path):
 
 
 def bin_image(mask):
+    """
+    Bins RGB value of the pixel
+
+    Args
+    ---------
+    mask(tensor,array) : the mask matrix of (size
+
+    Returns
+    ---------
+
+    """
     bins = np.array([20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240])
     new_mask = np.digitize(mask, bins)
     return new_mask
 
 
-def getSegmentationArr(image, classes, width=WIDTH, height=HEIGHT):
-    seg_labels = np.zeros((height, width, classes))
+def getSegmentationArr(image, classes, WIDTH=WIDTH, HEIGHT=HEIGHT):
+    seg_labels = np.zeros((HEIGHT, WIDTH, classes))
     img = image[:, :, 0]
-
     for c in range(classes):
         seg_labels[:, :, c] = (img == c).astype(int)
     return seg_labels
+
+
+# takes too much times
+def temporary(matrix):
+    tmp = np.zeros((matrix.shape))
+    for i in range(len(tmp)):
+        for j in range(len(tmp[i])):
+            for k in range(len(tmp[i][j])):
+                if matrix[i][j][k]:
+                    tmp[i][j][k] = 1
+    return tmp
 
 
 def give_color_to_seg_img(seg, n_classes=N_CLASSES):
@@ -58,10 +87,12 @@ def give_color_to_seg_img(seg, n_classes=N_CLASSES):
     seg_img = np.zeros((seg.shape[0], seg.shape[1], 3)).astype("float")
     colors = sns.color_palette("hls", n_classes)
 
-    for c in range(n_classes):
-        segc = seg == c
+    for c in tqdm(range(n_classes)):
+        segc = seg == c  # Cannot multiply bool tensor and float
+        segc = temporary(segc)
         seg_img[:, :, 0] += segc * (colors[c][0])
         seg_img[:, :, 1] += segc * (colors[c][1])
         seg_img[:, :, 2] += segc * (colors[c][2])
 
+    print(seg_img)
     return seg_img

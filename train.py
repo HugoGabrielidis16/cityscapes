@@ -1,5 +1,5 @@
 from model import create_model
-from data import load_dataset
+from data import to_dataset
 from config import Config
 import tensorflow as tf
 
@@ -9,7 +9,7 @@ session = tf.compat.v1.Session(config=config)
 
 if __name__ == "__main__":
     config = Config("RESUNET")
-    train_ds, val_ds, test_ds = load_dataset()
+    train_ds, val_ds, test_ds = to_dataset()
     model = create_model()
     history = model.fit(
         train_ds,

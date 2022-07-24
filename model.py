@@ -10,11 +10,11 @@ sm.framework()
 
 def create_model():
     config = Config()
-    model = sm.Unet("resnet34", classes=3, activation="sigmoid")
+    model = sm.Unet("resnet34", classes=config.n_classes, activation="sigmoid")
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=config.learning_rate),
         loss="categorical_crossentropy",
-        metrics=["accuracy", sm.metrics.iou_score],
+        metrics=["accuracy", sm.metrics.iou_score],  # change iou by jaccard
     )
     return model
 

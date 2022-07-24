@@ -11,9 +11,10 @@ import tensorflow as tf
 
 class Config:
     learning_rate = 3e-4
-    resize = (224, 224)
+    size = (224, 224)
     pretrained = True
     epochs = 20
+    n_classes = 13
 
     train_batch_size = 32
     test_batch_size = 64

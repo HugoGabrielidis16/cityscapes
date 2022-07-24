@@ -3,3 +3,9 @@ sm.set_framework("tf.keras")
 sm.framework()
 
 useful to not have to modify the package it self
+
+Problem encountered :
+    -> Transfrom the original (512,256,3) pictures to the image and mask pictures 
+    with images being (256,256,3) and mask (256,256,13) # number of class = 13
+    -> Hard to transform the first mask of (256,256,3) to (256,256,13), especially since the pixel didn't had the same value
+    -> Had to resort to bins which resolved the issue

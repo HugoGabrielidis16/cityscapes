@@ -6,27 +6,39 @@ from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 from function import *
 from model import processing_input
+from config import Config
 
+
+"""
+All the preprocesing of the data will be done there.
+The goal is to come from the path of our projects to the three differents tf.data.Dataset. 
+We want to just call the last function of the folder and give the outputs to our models to fit directly.
+"""
 
 PATH = "dataset"
-
-
-def on_file(file):
-    image, mask = loadImage(file)
-    mask_binned = bin_image(mask)
-    labels = getSegmentationArr(mask_binned, N_CLASSES)
-    labels = np.argmax(labels, axis=-1)
-    return np.array(image), np.array(labels)
+N_CLASSES = 13
+config = Config()
 
 
 def load_path():
+    """
+    Load the <str list> of all the train and val images.
+
+    Args
+    -------
+    None
+
+    Returns
+    -------
+    train (list) : the list of train images path
+    test (list) : the list of val images path
+    """
     train = sorted(glob(os.path.join(PATH, "train/*")))
     val = sorted(glob(os.path.join(PATH, "val/*")))
     return train, val
 
 
-def load_set():
-    train, val = load_path()
+def load_set(train, val):
     train_set = [loadImage(path) for path in tqdm(train)]
     val_set = [loadImage(path) for path in tqdm(val)]
 
@@ -54,10 +66,11 @@ def process_image(img):
     return img
 
 
-def process_mask(mask):
-    mask = mask / 255
-    mask = mask.astype(np.float32)
-    return mask
+def process_mask(mask, HEIGHT=256, WIDTH=256):
+    mask_binned = bin_image(mask)
+    new_mask = getSegmentationArr(mask_binned, N_CLASSES, WIDTH=WIDTH, HEIGHT=HEIGHT)
+    new_mask = new_mask.astype(np.float32)
+    return new_mask
 
 
 def process(x, y):
@@ -68,32 +81,32 @@ def process(x, y):
 
     image, mask = tf.numpy_function(f, [x, y], [tf.float32, tf.float32])
     image.set_shape([256, 256, 3])
-    mask.set_shape([256, 256, 3])
+    mask.set_shape([256, 256, 13])
     return image, mask
 
 
 @tf.function
-def tf_dataset(X, y):
+def tf_dataset(X, y, batch_size=32):
     ds = tf.data.Dataset.from_tensor_slices((X, y))
     ds = ds.map(process, num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.shuffle(buffer_size=1000)
-    ds = ds.batch(batch_size=32)
+    ds = ds.batch(batch_size=batch_size)
     ds = ds.prefetch(buffer_size=tf.data.AUTOTUNE)
     return ds
 
 
-def load_dataset():
-    X_train, y_train, X_val, y_val, X_test, y_test = load_set()
-    train_ds = tf_dataset(X_train, y_train)
-    val_ds = tf_dataset(X_val, y_val)
-    test_ds = tf_dataset(X_test, y_test)
+def to_dataset():
+    train, val = load_path()
+    X_train, y_train, X_val, y_val, X_test, y_test = load_set(train, val)
+    train_ds = tf_dataset(X_train, y_train, batch_size=config.train_batch_size)
+    val_ds = tf_dataset(X_val, y_val, batch_size=config.test_batch_size)
+    test_ds = tf_dataset(X_test, y_test, batch_size=config.test_batch_size)
     return train_ds, val_ds, test_ds
 
 
 if __name__ == "__main__":
-    train_ds, val_ds, test_ds = load_dataset()
+    train_ds, val_ds, test_ds = to_dataset()
     for x, y in train_ds.take(1):
         print(x.shape)
-        print(x[0])
         print(y.shape)
-        show_some_images(x, y)
+        # show_some_images(x, y)
