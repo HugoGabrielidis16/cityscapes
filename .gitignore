@@ -133,3 +133,4 @@ dmypy.json
 
 #Mine
 dataset/
+tf_save/
