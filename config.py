@@ -13,7 +13,7 @@ class Config:
     learning_rate = 3e-4
     size = (224, 224)
     pretrained = True
-    epochs = 20
+    epochs = 3
     n_classes = 13
 
     train_batch_size = 32

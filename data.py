@@ -110,3 +110,6 @@ if __name__ == "__main__":
         print(x.shape)
         print(y.shape)
         # show_some_images(x, y)
+    tf.data.experimental.save(train_ds, "tf_save/train", compression="GZIP")
+    tf.data.experimental.save(test_ds, "tf_save/test", compression="GZIP")
+    tf.data.experimental.save(val_ds, "tf_save/val", compression="GZIP")
