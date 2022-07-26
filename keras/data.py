@@ -5,8 +5,8 @@ import os
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 from function import *
-from model import processing_input
-from config import Config
+from keras.model import processing_input
+from keras.config import Config
 
 
 """
@@ -42,10 +42,10 @@ def load_set(train, val):
     train_set = [loadImage(path) for path in tqdm(train)]
     val_set = [loadImage(path) for path in tqdm(val)]
 
-    X_train = [x for x, _ in train_set]
-    y_train = [y for _, y in train_set]
+    X_train = [x for x, _ in tqdm(train_set)]
+    y_train = [y for _, y in tqdm(train_set)]
 
-    X_val = [x for x, _ in val_set]
+    X_val = [x for x, _ in tqdm(val_set)]
     y_val = [y for _, y in tqdm(val_set)]
 
     X_train, X_test, y_train, y_test = train_test_split(

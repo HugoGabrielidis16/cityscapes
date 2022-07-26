@@ -16,8 +16,8 @@ class Config:
     epochs = 3
     n_classes = 13
 
-    train_batch_size = 32
-    test_batch_size = 64
+    train_batch_size = 1
+    test_batch_size = 1
     seed = True
 
     # Look into it

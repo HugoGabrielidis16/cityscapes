@@ -1,7 +1,6 @@
-from distutils.command.config import config
 import segmentation_models as sm
 import tensorflow as tf
-from config import Config
+from keras.config import Config
 
 
 sm.set_framework("tf.keras")
@@ -10,7 +9,7 @@ sm.framework()
 
 def create_model():
     config = Config()
-    model = sm.Unet("resnet34", classes=config.n_classes, activation="sigmoid")
+    model = sm.Unet("resnet18", classes=config.n_classes, activation="sigmoid")
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=config.learning_rate),
         loss="categorical_crossentropy",
@@ -23,3 +22,8 @@ def processing_input():
     BACKBONE = "resnet34"
     preprocess_input = sm.get_preprocessing(BACKBONE)
     return preprocess_input
+
+
+if __name__ == "__main__":
+    model = create_model()
+    model.summary()

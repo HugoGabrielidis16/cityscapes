@@ -1,4 +1,4 @@
-from data import to_dataset
+from keras.data import to_dataset
 from random import randint
 from function import give_color_to_seg_img
 import matplotlib.pyplot as plt

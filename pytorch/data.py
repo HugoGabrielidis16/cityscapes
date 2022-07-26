@@ -36,7 +36,6 @@ class CityScapeDataset:
 
         img = img.view(3, 256, 256)
         new_mask = new_mask.view(13, 256, 256)
-
         return img, new_mask
 
     def __len__(self):
@@ -62,7 +61,7 @@ class CityScapeDataModule:
 
     def test_loader(self):
         test_ds = CityScapeDataset(self.test_path)
-        self.test_loader = DataLoader(test_ds, batch_size=self.batch_size)
+        return DataLoader(test_ds, batch_size=self.batch_size)
 
 
 # PATH = "../dataset"
