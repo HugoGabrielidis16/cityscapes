@@ -33,8 +33,17 @@ if __name__ == "__main__":
         verbose=True,
     )
 
-    for i in range(0, 40):
+    max_score = 0
 
+    for i in range(0, 40):
         print("\nEpoch: {}".format(i))
         train_logs = train_epoch.run(train_loader)
         test_logs = valid_epoch.run(test_loader)
+        if max_score < test_logs["iou_score"]:
+            max_score = test_logs["iou_score"]
+            torch.save(model, "./best_model.pth")
+            print("Model saved!")
+
+        if i == 25:
+            optimizer.param_groups[0]["lr"] = 1e-5
+            print("Decrease decoder learning rate to 1e-5!")

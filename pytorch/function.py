@@ -71,13 +71,36 @@ def getSegmentationArr(image, classes, WIDTH=WIDTH, HEIGHT=HEIGHT):
 
 
 def give_color_to_seg_img(seg, n_classes=N_CLASSES):
-    seg = np.argmax(seg, axis=0)
+    seg = seg.view(256, 256, 13)  # pytorch use channel last
+    seg = np.argmax(seg, axis=-1)
     seg_img = np.zeros((seg.shape[0], seg.shape[1], 3)).astype("float")
     colors = sns.color_palette("hls", n_classes)
 
     for c in tqdm(range(n_classes)):
         segc = seg == c  # Cannot multiply bool tensor and float
+        segc = segc.cpu().detach().numpy()
         seg_img[:, :, 0] += segc * (colors[c][0])
         seg_img[:, :, 1] += segc * (colors[c][1])
         seg_img[:, :, 2] += segc * (colors[c][2])
     return seg_img
+
+
+def show_some_images(images, masks):
+    """
+    Show a numbers of images and it's associated masks
+    """
+
+    random_number = randint(0, len(images) - 6)
+    # random_number = 4  # Used to check on malignant
+    plt.figure(figsize=(20, 10))
+    for i in range(5):
+        plt.subplot(2, 5, i + 1)
+        plt.imshow(images[random_number + i + 1].view(256, 256, 3))
+        plt.axis("off")
+        plt.title("Image")
+    for i in range(5):
+        plt.subplot(2, 5, i + 6)
+        plt.imshow(give_color_to_seg_img(masks[random_number + i + 1]))
+        plt.title("Mask Image")
+        plt.axis("off")
+    plt.show()

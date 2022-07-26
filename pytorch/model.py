@@ -1,8 +1,11 @@
-from turtle import forward
 import segmentation_models_pytorch as smp
 from segmentation_models_pytorch.encoders import get_preprocessing_fn
 import torch.nn as nn
 import torch
+
+ENCODER = "resnet34"
+ENCODER_WEIGHTS = "imagenet"
+ACTIVATION = "softmax2d"
 
 
 class UNET_RESNET(nn.Module):
@@ -10,10 +13,11 @@ class UNET_RESNET(nn.Module):
         super(UNET_RESNET, self).__init__()
 
         self.model = smp.Unet(
-            encoder_name="resnet34",  # choose encoder, e.g. mobilenet_v2 or efficientnet-b7
-            encoder_weights="imagenet",  # use `imagenet` pre-trained weights for encoder initialization
+            encoder_name=ENCODER,  # choose encoder, e.g. mobilenet_v2 or efficientnet-b7
+            encoder_weights=ENCODER_WEIGHTS,  # use `imagenet` pre-trained weights for encoder initialization
             in_channels=in_channels,  # model input channels (1 for gray-scale images, 3 for RGB, etc.)
-            classes=classes,  # model output channels (number of classes in your dataset)
+            classes=classes,
+            activation=ACTIVATION,  # model output channels (number of classes in your dataset)
         )
 
     def forward(self, x):
@@ -25,3 +29,5 @@ if __name__ == "__main__":
     x = torch.randn((1, 3, 256, 256))
     y = model(x)
     print(y.shape)
+    y = y.view(256, 256, 13)
+    print(y[0][0])
