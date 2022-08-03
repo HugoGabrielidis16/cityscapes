@@ -82,7 +82,7 @@ class CityScapeDataModule:
 
 
 PATH = "../dataset"
-PATH = "dataset"
+# PATH = "dataset"
 Module = CityScapeDataModule(PATH, 32)
 Module.setup()
 

@@ -15,6 +15,7 @@ if __name__ == "__main__":
         smp.utils.metrics.IoU(threshold=0.5),
     ]
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    model = model.to(device)
 
     train_epoch = smp.utils.train.TrainEpoch(
         model,

@@ -5,8 +5,8 @@ import os
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 from function import *
-from keras.model import processing_input
-from keras.config import Config
+from model import processing_input
+from config import Config
 
 
 """
@@ -15,7 +15,7 @@ The goal is to come from the path of our projects to the three differents tf.dat
 We want to just call the last function of the folder and give the outputs to our models to fit directly.
 """
 
-PATH = "dataset"
+PATH = "../dataset"
 N_CLASSES = 13
 config = Config()
 
@@ -52,10 +52,10 @@ def load_set(train, val):
         X_train, y_train, test_size=0.1, shuffle=True, random_state=1
     )
 
-    preprocess_input = processing_input()
+    """ preprocess_input = processing_input()
     X_train = preprocess_input(X_train)
     X_val = preprocess_input(X_val)
-    X_test = preprocess_input(X_test)
+    X_test = preprocess_input(X_test) """
 
     return X_train, y_train, X_val, y_val, X_test, y_test
 

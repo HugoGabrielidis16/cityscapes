@@ -1,6 +1,6 @@
 import segmentation_models as sm
 import tensorflow as tf
-from keras.config import Config
+from config import Config
 
 
 sm.set_framework("tf.keras")

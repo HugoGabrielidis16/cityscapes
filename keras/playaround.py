@@ -1,4 +1,4 @@
-from keras.data import load_path, load_set
+from data import load_path, load_set
 import matplotlib.pyplot as plt
 from random import randint
 import numpy as np
