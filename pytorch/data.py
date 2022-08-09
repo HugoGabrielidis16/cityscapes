@@ -26,7 +26,6 @@ class CityScapeDataset:
 
     def __getitem__(self, idx):
         img, mask = loadImage(self.folder[idx])
-        mask = mask / 255
 
         mask_binned = bin_image(mask)
         new_mask = getSegmentationArr(
@@ -71,11 +70,11 @@ class CityScapeDataModule:
         train_ds = CityScapeDataset(
             self.train_path, preprocessing=self.preprocessing_fn
         )
-        return DataLoader(train_ds, batch_size=self.batch_size)
+        return DataLoader(train_ds, batch_size=self.batch_size, num_workers = 3)
 
     def test_loader(self):
         test_ds = CityScapeDataset(self.test_path, preprocessing=self.preprocessing_fn)
-        return DataLoader(test_ds, batch_size=self.batch_size)
+        return DataLoader(test_ds, batch_size=self.batch_size, num_workers = 3)
 
 
 PATH = "../dataset"

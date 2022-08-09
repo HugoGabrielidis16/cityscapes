@@ -12,6 +12,5 @@ if __name__ == "__main__":
     train_loader = Module.train_loader()
     test_loader = Module.test_loader()
     model = UNET_RESNET(3,13)
-    trainer = Trainer(max_epochs = 10)
-
+    trainer = Trainer(max_epochs = 10, fast_dev_run = True, log_every_n_steps = 1)
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders = test_loader) 

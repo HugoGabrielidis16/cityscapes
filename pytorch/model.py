@@ -25,6 +25,7 @@ class UNET_RESNET(pl.LightningModule):
             activation=ACTIVATION,  # model output channels (number of classes in your dataset)
         )
         self.criterion = DiceLoss()
+        self.metrics = torchmetrics.JaccardIndex(13)
 
     def forward(self, x):
         return self.model(x)
@@ -34,24 +35,23 @@ class UNET_RESNET(pl.LightningModule):
 
 
 
-    def jaccard_metrics(self, mask, mask_pred):
-        metrics = torchmetrics.JaccardIndex()
-        iouscore = metrics(mask_pred, mask)
         return iouscore 
 
     def training_step(self,batch, batch_id):
         img,mask = batch
         predicted_mask = self(img)
         loss = self.criterion(predicted_mask, mask)
-        iou_score = self.jaccard_metrics(mask, predicted_mask)
-        return {"loss" : loss, "iou_score" : iou_score}
+        iou_score = self.metrics(predicted_mask, mask)
+        self.log("train_iou_score", iou_score, on_step = True, on_epoch = True)
+        return {"loss" : loss}
     
     def validation_step(self,batch,batch_id):
-        criterion = smp.losses.DiceLoss('multiclass')
         img,mask = batch
         predicted_mask = self(img)
-        loss = criterion(predicted_mask, mask)
-        return {loss : loss}
+        loss = self.criterion(predicted_mask, mask)
+        iou_score = self.metrics(predicted_mask, mask)
+        self.log("train_iou_score", iou_score, on_step = True, on_epoch = True)
+        return {"loss" : loss}
 
 if __name__ == "__main__":
     model = UNET_RESNET(3, 13)

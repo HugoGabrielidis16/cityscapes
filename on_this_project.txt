@@ -9,3 +9,5 @@ Problem encountered :
     with images being (256,256,3) and mask (256,256,13) # number of class = 13
     -> Hard to transform the first mask of (256,256,3) to (256,256,13), especially since the pixel didn't had the same value
     -> Had to resort to bins which resolved the issue
+
+ToDo : refactor using pytorchlightning
