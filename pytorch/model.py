@@ -1,14 +1,19 @@
+from syslog import LOG_SYSLOG
 import segmentation_models_pytorch as smp
 from segmentation_models_pytorch.encoders import get_preprocessing_fn
 import torch.nn as nn
 import torch
+import pytorch_lightning as pl
+from loss import DiceLoss
+import torchmetrics 
+
 
 ENCODER = "resnet34"
 ENCODER_WEIGHTS = "imagenet"
 ACTIVATION = "softmax2d"
 
 
-class UNET_RESNET(nn.Module):
+class UNET_RESNET(pl.LightningModule):
     def __init__(self, in_channels, classes) -> None:
         super(UNET_RESNET, self).__init__()
 
@@ -19,10 +24,34 @@ class UNET_RESNET(nn.Module):
             classes=classes,
             activation=ACTIVATION,  # model output channels (number of classes in your dataset)
         )
+        self.criterion = DiceLoss()
 
     def forward(self, x):
         return self.model(x)
+    
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.parameters(), lr=0.02)
 
+
+
+    def jaccard_metrics(self, mask, mask_pred):
+        metrics = torchmetrics.JaccardIndex()
+        iouscore = metrics(mask_pred, mask)
+        return iouscore 
+
+    def training_step(self,batch, batch_id):
+        img,mask = batch
+        predicted_mask = self(img)
+        loss = self.criterion(predicted_mask, mask)
+        iou_score = self.jaccard_metrics(mask, predicted_mask)
+        return {"loss" : loss, "iou_score" : iou_score}
+    
+    def validation_step(self,batch,batch_id):
+        criterion = smp.losses.DiceLoss('multiclass')
+        img,mask = batch
+        predicted_mask = self(img)
+        loss = criterion(predicted_mask, mask)
+        return {loss : loss}
 
 if __name__ == "__main__":
     model = UNET_RESNET(3, 13)
