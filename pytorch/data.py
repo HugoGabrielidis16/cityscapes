@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-from glob import glob
 import os
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
@@ -32,19 +31,15 @@ class CityScapeDataset:
         new_mask = getSegmentationArr(
             mask_binned, self.N_CLASSES, WIDTH=self.WIDTH, HEIGHT=self.HEIGHT
         )
-        new_mask = new_mask.astype(np.float32)
 
-        """ if self.preprocessing != None:
-            img = self.preprocessing(img) """
+        if self.preprocessing != None:
+            img = self.preprocessing(img)
 
         if self.transform != None:
             img = self.transform(img)
 
         img = torch.Tensor(img)
-        new_mask = torch.Tensor(new_mask)
-
-        img = img / 255
-        new_mask = new_mask / 255
+        new_mask = torch.Tensor(new_mask).long()
 
         img = img.view(3, 256, 256)
         new_mask = new_mask.view(13, 256, 256)
@@ -78,11 +73,14 @@ class CityScapeDataModule:
 
     def test_loader(self):
         test_ds = CityScapeDataset(self.test_path, preprocessing=self.preprocessing_fn)
-        return DataLoader(test_ds, batch_size=self.batch_size)
+        return DataLoader(
+            test_ds,
+            batch_size=self.batch_size,
+        )
 
 
 PATH = "../dataset"
-# PATH = "dataset"
+PATH = "dataset"
 Module = CityScapeDataModule(PATH, 32)
 Module.setup()
 
@@ -92,5 +90,6 @@ if __name__ == "__main__":
         img, mask = data
         print(img.shape)
         print(mask.shape)
+        print(mask[0][0])
         show_some_images(img, mask)
         break

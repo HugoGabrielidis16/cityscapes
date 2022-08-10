@@ -1,14 +1,20 @@
+from syslog import LOG_SYSLOG
 import segmentation_models_pytorch as smp
 from segmentation_models_pytorch.encoders import get_preprocessing_fn
 import torch.nn as nn
 import torch
+import pytorch_lightning as pl
+from loss import DiceLoss
+import torchmetrics
+import matplotlib.pyplot as plt
+from function import give_color_to_seg_img
+
 
 ENCODER = "resnet34"
 ENCODER_WEIGHTS = "imagenet"
-ACTIVATION = "softmax2d"
 
 
-class UNET_RESNET(nn.Module):
+class UNET_RESNET(pl.LightningModule):
     def __init__(self, in_channels, classes) -> None:
         super(UNET_RESNET, self).__init__()
 
@@ -17,11 +23,40 @@ class UNET_RESNET(nn.Module):
             encoder_weights=ENCODER_WEIGHTS,  # use `imagenet` pre-trained weights for encoder initialization
             in_channels=in_channels,  # model input channels (1 for gray-scale images, 3 for RGB, etc.)
             classes=classes,
-            activation=ACTIVATION,  # model output channels (number of classes in your dataset)
+            activation="softmax",
         )
+        self.criterion = DiceLoss()
+        self.metrics = torchmetrics.JaccardIndex(13)
 
     def forward(self, x):
         return self.model(x)
+
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.parameters(), lr=0.02)
+
+    def training_step(self, batch, batch_id):
+        img, mask = batch
+        predicted_mask = self(img)
+        loss = self.criterion(predicted_mask, mask)
+        iou_score = self.metrics(predicted_mask, mask)
+        self.log("train_iou_score", iou_score, on_step=True, on_epoch=True)
+        return {"loss": loss}
+
+    def validation_step(self, batch, batch_id):
+        img, mask = batch
+        predicted_mask = self(img)
+
+        self.show_image(predicted_mask[0])
+        loss = self.criterion(predicted_mask, mask)
+        iou_score = self.metrics(predicted_mask, mask)
+        self.log("test_iou_score", iou_score, on_step=True, on_epoch=True)
+        return {"loss": loss}
+
+    def show_image(self, mask):
+        plt.imshow(give_color_to_seg_img(mask))
+        plt.title("Mask Image")
+        plt.axis("off")
+        plt.show()
 
 
 if __name__ == "__main__":

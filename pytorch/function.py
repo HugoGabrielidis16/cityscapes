@@ -103,4 +103,5 @@ def show_some_images(images, masks):
         plt.imshow(give_color_to_seg_img(masks[random_number + i + 1]))
         plt.title("Mask Image")
         plt.axis("off")
+        plt.savefig("Preprocessed_Image_and_mask.png")
     plt.show()
