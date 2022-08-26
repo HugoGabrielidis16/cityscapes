@@ -8,10 +8,8 @@ from function import loadImage, bin_image, getSegmentationArr, show_some_images
 import torch
 import matplotlib.pyplot as plt
 import segmentation_models_pytorch as smp
+from config import config
 
-
-ENCODER = "resnet34"
-ENCODER_WEIGHTS = "imagenet"
 
 
 class CityScapeDataset:
@@ -58,7 +56,7 @@ class CityScapeDataModule:
         ]
         self.batch_size = batch_size
         self.preprocessing_fn = smp.encoders.get_preprocessing_fn(
-            ENCODER, ENCODER_WEIGHTS
+            config.ENCODER, config.ENCODER_WEIGHTS
         )
 
     def setup(self):

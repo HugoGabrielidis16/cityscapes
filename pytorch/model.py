@@ -1,4 +1,4 @@
-from syslog import LOG_SYSLOG
+from function import give_color_to_seg_img
 import segmentation_models_pytorch as smp
 from segmentation_models_pytorch.encoders import get_preprocessing_fn
 import torch.nn as nn
@@ -6,6 +6,7 @@ import torch
 import pytorch_lightning as pl
 from loss import DiceLoss
 import torchmetrics 
+import matplotlib.pyplot as plt
 
 
 ENCODER = "resnet34"
@@ -32,19 +33,27 @@ class UNET_RESNET(pl.LightningModule):
     
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=0.02)
-
-
-
-        return iouscore 
-
+ 
     def training_step(self,batch, batch_id):
         img,mask = batch
         predicted_mask = self(img)
         loss = self.criterion(predicted_mask, mask)
         iou_score = self.metrics(predicted_mask, mask)
         self.log("train_iou_score", iou_score, on_step = True, on_epoch = True)
+        
+        if batch_id%30 == 1:
+            true_mask_example = give_color_to_seg_img(img[0])
+            predicted_mask_example = give_color_to_seg_img(predicted_mask[0])
+            plt.subplot(2,1,1)
+            plt.imshow(true_mask_example)
+            plt.title("True mask")
+            plt.subplot(2,2,1)
+            plt.subplot(predicted_mask_example)
+            plt.title("Predicted mask")
+
         return {"loss" : loss}
-    
+
+
     def validation_step(self,batch,batch_id):
         img,mask = batch
         predicted_mask = self(img)
@@ -52,6 +61,8 @@ class UNET_RESNET(pl.LightningModule):
         iou_score = self.metrics(predicted_mask, mask)
         self.log("train_iou_score", iou_score, on_step = True, on_epoch = True)
         return {"loss" : loss}
+
+        
 
 if __name__ == "__main__":
     model = UNET_RESNET(3, 13)
