@@ -1,7 +1,8 @@
-from keras.model import create_model
-from keras.data import to_dataset
-from keras.config import Config
+from model import create_model
+from data import to_dataset
+from config import Config
 import tensorflow as tf
+from vgg16 import segmentation_model
 
 
 if __name__ == "__main__":
@@ -13,7 +14,7 @@ if __name__ == "__main__":
     conf.log_device_placement = True
     session = tf.compat.v1.Session(config=conf)
 
-    model = create_model()
+    model = segmentation_model()
     history = model.fit(
         train_ds,
         epochs=config.epochs,
