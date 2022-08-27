@@ -32,13 +32,13 @@ class UNET_RESNET(pl.LightningModule):
         return mask
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.model.parameters(), lr=0.02)
+        return torch.optim.Adam(self.parameters(), lr=0.0002)
 
  
     def training_step(self,batch, batch_id):
         
         img,mask = batch
-        predicted_mask = self(img)
+        predicted_mask = self.forward(img)
         loss = self.criterion(predicted_mask, mask)
         iou_score = self.metrics(predicted_mask, mask)
         
