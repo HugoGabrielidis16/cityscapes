@@ -1,11 +1,8 @@
-
-
-
-class Config :
+class Config:
     wand = False
     criterion = "Adam"
-
-    ENCODER = "efficientnet-b2"
+    ENCODER = "resnet34"
     ENCODER_WEIGHTS = "imagenet"
+
 
 config = Config()

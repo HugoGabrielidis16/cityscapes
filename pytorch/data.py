@@ -11,7 +11,6 @@ import segmentation_models_pytorch as smp
 from config import config
 
 
-
 class CityScapeDataset:
     def __init__(self, folder, transform=None, preprocessing=None):
         self.folder = folder
@@ -53,7 +52,8 @@ class CityScapeDataModule:
 
         print("Loading images ... ")
         self.img_path = [
-            os.path.join(PATH, "train", str(i) + ".jpg") for i in tqdm(range(1, 2973))
+            os.path.join(PATH, "train", str(i) + ".jpg")
+            for i in tqdm(range(1, 32))  # 2973
         ]
         self.batch_size = batch_size
         self.preprocessing_fn = smp.encoders.get_preprocessing_fn(
@@ -80,7 +80,7 @@ class CityScapeDataModule:
 
 
 PATH = "../dataset"
-#PATH = "dataset"
+# PATH = "dataset"
 Module = CityScapeDataModule(PATH, 32)
 Module.setup()
 
