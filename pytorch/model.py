@@ -44,7 +44,19 @@ class UNET_RESNET(pl.LightningModule):
         
         print(batch_id)
         if batch_id%5 == 1:
-            predicted = predicted_mask[0].detach()
+            self.show_image(mask, predicted_mask)
+        
+        return {"loss" : loss, "iou_score" : iou_score}
+
+    def validation_step(self, batch, batch_id):
+        img, mask = batch
+        predicted_mask = self(img)
+        loss = self.criterion(predicted_mask, mask)
+        iou_score = self.metrics(predicted_mask, mask)
+        return {"loss": loss, "iou_score" : iou_score }
+
+    def show_image(self,mask, predicted_mask):
+            predicted = predicted_mask[0].detach() # Necesseray because we cant use numpy for tensor that have grad
             
             true_mask_example = give_color_to_seg_img(mask[0])
             predicted_mask_example = give_color_to_seg_img(predicted)
@@ -57,14 +69,6 @@ class UNET_RESNET(pl.LightningModule):
             plt.title("Predicted mask")
             plt.show()
 
-        return {"loss" : loss}
-
-    def validation_step(self, batch, batch_id):
-        img, mask = batch
-        predicted_mask = self(img)
-        loss = self.criterion(predicted_mask, mask)
-        iou_score = self.metrics(predicted_mask, mask)
-        return {"loss": loss}
 
 
         
