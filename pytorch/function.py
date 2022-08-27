@@ -76,7 +76,7 @@ def give_color_to_seg_img(seg, n_classes=N_CLASSES):
     seg_img = np.zeros((seg.shape[0], seg.shape[1], 3)).astype("float")
     colors = sns.color_palette("hls", n_classes)
 
-    for c in tqdm(range(n_classes)):
+    for c in range(n_classes):
         segc = seg == c  # Cannot multiply bool tensor and float
         segc = segc.cpu().detach().numpy()
         seg_img[:, :, 0] += segc * (colors[c][0])

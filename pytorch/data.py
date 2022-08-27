@@ -50,6 +50,8 @@ class CityScapeDataset:
 class CityScapeDataModule:
     def __init__(self, PATH, batch_size) -> None:
         self.PATH = PATH
+
+        print("Loading images ... ")
         self.img_path = [
             os.path.join(PATH, "train", str(i) + ".jpg") for i in tqdm(range(1, 2973))
         ]
@@ -78,7 +80,7 @@ class CityScapeDataModule:
 
 
 PATH = "../dataset"
-PATH = "dataset"
+#PATH = "dataset"
 Module = CityScapeDataModule(PATH, 32)
 Module.setup()
 
@@ -88,6 +90,3 @@ if __name__ == "__main__":
         img, mask = data
         print(img.shape)
         print(mask.shape)
-        print(mask[0][0])
-        show_some_images(img, mask)
-        break
