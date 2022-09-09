@@ -21,7 +21,15 @@ if __name__ == "__main__":
     trainer.fit(
         model=model, train_dataloaders=train_loader, val_dataloaders=test_loader
     ) """
+    device = ("gpu" if torch.cuda.is_available() else "cpu",)
     optimizer = torch.optim.Adam([p for p in model.parameters()], lr=3e-3)
     criterion = DiceLoss
-    trainer = Trainer(model, train_loader, test_loader, optimizer, DiceLoss)
+    trainer = Trainer(
+        model=model,
+        train_loader=train_loader,
+        test_loader=test_loader,
+        optimizer=optimizer,
+        criterion=DiceLoss,
+        device=device,
+    )
     trainer.fit(50)

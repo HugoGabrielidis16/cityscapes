@@ -53,7 +53,7 @@ class CityScapeDataModule:
         print("Loading images ... ")
         self.img_path = [
             os.path.join(PATH, "train", str(i) + ".jpg")
-            for i in tqdm(range(1, 32))  # 2973
+            for i in tqdm(range(1, 2973))  # 2973
         ]
         self.batch_size = batch_size
         self.preprocessing_fn = smp.encoders.get_preprocessing_fn(

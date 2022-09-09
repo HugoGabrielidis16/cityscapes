@@ -16,14 +16,18 @@ class Trainer:
         self.device = device
 
     def fit(self, epochs):
+        best_loss = 500000
         for epoch in range(epochs):
             print(f"Epoch : {epoch}")
             train_loss = self.train_(epoch)
             val_loss = self.val_()
-
             print(
                 f" Epoch : {epoch}/{epochs} - train_loss : {train_loss} - val_loss : {val_loss}"
             )
+            if val_loss < best_loss:
+                print("Saving best model")
+                torch.save(self.model.state_dict(), "best_model.pt")
+                best_loss = val_loss
 
     def train_(self, epoch):
         self.model.to(self.device)
@@ -42,7 +46,6 @@ class Trainer:
             train_loss += loss.item()
             if epoch % 10 == 0:
                 self.model.show_image(y, y_pred)
-                print(f"Loss : {loss}")
 
         return train_loss
 
