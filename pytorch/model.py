@@ -4,6 +4,7 @@ from config import config
 from torchsummary import summary
 import torchmetrics
 import pytorch_lightning as pl
+from data import Module
 
 
 class UNET_RESNET(pl.LightningModule):
@@ -63,6 +64,12 @@ class UNET_RESNET(pl.LightningModule):
         dice = (2.0 * intersection) / (cardinality)
 
         return 1 - dice
+
+    def train_dataloader(self):
+        return Module.train_loader()
+
+    def val_dataloader(self):
+        return Module.test_loader()
 
 
 if __name__ == "__main__":

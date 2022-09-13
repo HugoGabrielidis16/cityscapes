@@ -9,7 +9,6 @@ import torch
 import matplotlib.pyplot as plt
 import segmentation_models_pytorch as smp
 from config import config
-import multiprocessing
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -87,7 +86,7 @@ class CityScapeDataModule:
         return DataLoader(
             train_ds,
             batch_size=self.batch_size,
-            num_workers=multiprocessing.cpu_count() // 4,
+            num_workers=8,
             persistent_workers=True,
         )
 
@@ -95,13 +94,11 @@ class CityScapeDataModule:
         test_ds = CityScapeDataset(
             folder=self.test_path,
             transform=self.transform,
-            preprocessing=None,
         )
         return DataLoader(
             test_ds,
             batch_size=self.batch_size,
-            num_workers=multiprocessing.cpu_count() // 4,
-            persistent_workers=True,
+            num_workers=8,
         )
 
 
