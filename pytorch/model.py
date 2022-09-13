@@ -3,6 +3,7 @@ import torch
 from config import config
 from torchsummary import summary
 from loss import DiceLoss
+import torchmetrics
 
 import pytorch_lightning as pl
 
@@ -18,7 +19,8 @@ class UNET_RESNET(pl.LightningModule):
             classes=classes,
         )
 
-        self.loss = DiceLoss
+        self.loss = smp.losses.DiceLoss(mode="multiclass")
+        self.metrics = torchmetrics.IoU(num_classes=classes)
         self.lr = 1e-3
 
     def forward(self, x):
@@ -33,13 +35,19 @@ class UNET_RESNET(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         img, mask = batch
         mask_pred = self(img)
-        loss = self.loss(mask, mask_pred)
+        loss = self.loss(mask_pred, mask)
+        iou = self.metrics(mask_pred, mask)
+        self.log("train_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
+        self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_id):
         img, mask = batch
         mask_pred = self(img)
         loss = self.loss(mask, mask_pred)
+        iou = self.metrics(mask_pred, mask)
+        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=False)
+        self.log("val_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
         return loss
 
 
