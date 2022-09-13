@@ -2,6 +2,7 @@ import torch
 from tqdm import tqdm
 import torch.nn.functional as F
 import numpy as np
+from time import time
 
 
 class Trainer:
@@ -19,10 +20,12 @@ class Trainer:
         best_loss = 500000
         for epoch in range(epochs):
             print(f"Epoch : {epoch}")
+            start_time = time.time()
             train_loss = self.train_(epoch)
             val_loss = self.val_()
+            end_time = time.time()
             print(
-                f" Epoch : {epoch}/{epochs} - train_loss : {train_loss} - val_loss : {val_loss}"
+                f" Epoch : {epoch}/{epochs} - train_loss : {train_loss} - val_loss : {val_loss} - Taken time : {end_time - start_time}s"
             )
             if val_loss < best_loss:
                 print("Saving best model")
@@ -39,7 +42,7 @@ class Trainer:
 
             y_pred = self.model(x)
             loss = self.criterion(y_pred, y)
-            print(loss)
+            print(f"Loss for batch {batch_id} : {loss}")
             loss.backward()
             self.optimizer.step()
             train_loss += loss.item()

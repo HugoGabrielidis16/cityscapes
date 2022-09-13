@@ -13,7 +13,9 @@ if __name__ == "__main__":
     test_loader = Module.test_loader()
     model = UNET_RESNET_without_pl(3, 13)  # 3 in channel, 13 out
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print("Device used : " + device)
+    print("Available devices ", torch.cuda.device_count())
+    print("Current cuda device ", torch.cuda.current_device())
+
     model = torch.nn.DataParallel(model)
     model.to(device)
 
@@ -31,8 +33,8 @@ if __name__ == "__main__":
     criterion = DiceLoss
     trainer = Trainer(
         model=model,
-        train_loader=train_loader,
-        test_loader=test_loader,
+        trainloader=train_loader,
+        testloader=test_loader,
         optimizer=optimizer,
         criterion=DiceLoss,
         device=device,

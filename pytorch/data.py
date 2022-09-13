@@ -81,7 +81,7 @@ class CityScapeDataModule:
 
 PATH = "../dataset"
 # PATH = "dataset"
-Module = CityScapeDataModule(PATH, 32)
+Module = CityScapeDataModule(PATH, 32 * 8)
 Module.setup()
 
 if __name__ == "__main__":
