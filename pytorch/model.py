@@ -20,7 +20,7 @@ class UNET_RESNET(pl.LightningModule):
         )
 
         self.loss = smp.losses.DiceLoss(mode="multiclass")
-        self.metrics = torchmetrics.IoU(num_classes=classes)
+        self.metrics = torchmetrics.JaccardIndex(num_classes=classes)
         self.lr = 1e-3
 
     def forward(self, x):
@@ -28,7 +28,7 @@ class UNET_RESNET(pl.LightningModule):
         return mask
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.encoder.parameters(), lr=self.lr)
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
         lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)
         return [optimizer], [lr_scheduler]
 
@@ -36,21 +36,22 @@ class UNET_RESNET(pl.LightningModule):
         img, mask = batch
         mask_pred = self(img)
         loss = self.loss(mask_pred, mask)
-        iou = self.metrics(mask_pred, mask)
-        self.log("train_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
+
+        iou = self.metrics(mask_pred, mask.long())
         self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        # self.log("train_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
         return loss
 
     def validation_step(self, batch, batch_id):
         img, mask = batch
         mask_pred = self(img)
-        loss = self.loss(mask, mask_pred)
-        iou = self.metrics(mask_pred, mask)
+        loss = self.loss(mask_pred, mask)
+        iou = self.metrics(mask_pred, mask.long())
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=False)
-        self.log("val_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
+        # self.log("val_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
         return loss
 
 
 if __name__ == "__main__":
-    model = UNET_RESNET(3, 13)
+    model = UNET_RESNET()
     summary(model, (3, 224, 224))

@@ -15,18 +15,16 @@ if __name__ == "__main__":
     test_loader = Module.test_loader()
     model = UNET_RESNET()  # 3 in channel, 13 out
 
-    print("Available devices ", torch.cuda.device_count())
-    print("Current cuda device ", torch.cuda.current_device())
-
     checkpoint_callback = ModelCheckpoint(
         monitor="val_loss", dirpath="checkpoints", filename="file", save_last=True
     )
 
     trainer = Trainer(
+        fast_dev_run=True,
         max_epochs=200,
         auto_lr_find=False,
         auto_scale_batch_size=False,
-        gpus=-1,
+        accelerator="auto",
         precision=16,
         callbacks=[checkpoint_callback],
     )

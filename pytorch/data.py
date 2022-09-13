@@ -36,7 +36,7 @@ class CityScapeDataset:
             img = self.transform(img)
 
         img = torch.Tensor(img)
-        new_mask = torch.Tensor(new_mask).long()
+        new_mask = torch.Tensor(new_mask)
 
         img = img.view(3, 256, 256)
         new_mask = new_mask.view(13, 256, 256)
@@ -55,7 +55,7 @@ class CityScapeDataModule:
             os.path.join(PATH, "train", str(i) + ".jpg")
             for i in tqdm(range(1, 2973))  # 2973
         ]
-        self.batch_size = batch_size
+        self.batch_size = 1
         self.preprocessing_fn = smp.encoders.get_preprocessing_fn(
             config.ENCODER, config.ENCODER_WEIGHTS
         )
