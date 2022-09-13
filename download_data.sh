@@ -5,3 +5,4 @@ pip install segmentation_models_pytorch
 pip install torchsummary
 pip install seaborn
 pip install tqm
+pip install pytorch-lightning

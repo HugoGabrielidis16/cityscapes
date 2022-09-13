@@ -1,8 +1,8 @@
+from this import d
 import segmentation_models_pytorch as smp
 import torch
 from config import config
 from torchsummary import summary
-from loss import DiceLoss
 import torchmetrics
 
 import pytorch_lightning as pl
@@ -19,7 +19,6 @@ class UNET_RESNET(pl.LightningModule):
             classes=classes,
         )
 
-        self.loss = smp.losses.DiceLoss(mode="multiclass")
         self.metrics = torchmetrics.JaccardIndex(num_classes=classes)
         self.lr = 1e-3
 
@@ -35,7 +34,7 @@ class UNET_RESNET(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         img, mask = batch
         mask_pred = self(img)
-        loss = self.loss(mask_pred, mask)
+        loss = self.DiceLoss(mask_pred, mask)
 
         iou = self.metrics(mask_pred, mask.long())
         self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
@@ -45,11 +44,27 @@ class UNET_RESNET(pl.LightningModule):
     def validation_step(self, batch, batch_id):
         img, mask = batch
         mask_pred = self(img)
-        loss = self.loss(mask_pred, mask)
+        loss = self.DiceLoss(mask_pred, mask)
         iou = self.metrics(mask_pred, mask.long())
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=False)
         # self.log("val_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
         return loss
+
+    def DiceLoss(self, inputs, targets):
+
+        # comment out if your model contains a sigmoid or equivalent activation layer
+        inputs = torch.sigmoid(inputs)
+
+        # flatten label and prediction tensors
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+
+        intersection = (inputs * targets).sum()
+        cardinality = torch.sum(inputs + targets)
+
+        dice = (2.0 * intersection) / (cardinality)
+
+        return 1 - dice
 
 
 if __name__ == "__main__":
