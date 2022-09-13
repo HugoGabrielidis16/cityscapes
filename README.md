@@ -1,17 +1,9 @@
 ## Cityscapes
 
-# Issue encountered
+Cityscapes is a large-scale database which focuses on semantic understanding of urban street scenes. It provides semantic, instance-wise, and dense pixel annotations for 30 classes grouped into 8 categories (flat surfaces, humans, vehicles, constructions, objects, nature, sky, and void). The dataset consists of around 5000 fine annotated images and 20000 coarse annotated ones. Data was captured in 50 cities during several months, daytimes, and good weather conditions. It was originally recorded as video so the frames were manually selected to have the following features: large number of dynamic objects, varying scene layout, and varying background.
 
-To resolve : - When loading on LambdaLabs GPU got the following error :
--> 2022-07-21 13:03:26.910215: E tensorflow/stream_executor/cuda/cuda_driver.cc:1163] failed to enqueue async memcpy from device to host: CUDA_ERROR_INVALID_VALUE: invalid argument; host dst: 0x7fa1fe404700; GPU src: 0x7f97c144e040; size: 196608=0x30000
+# Learned on this dataset
 
--> Google collab session stop :
-Idea : set batch_size to 1
-
-Resolved : - Error : keras_utils have no methods get_file :
--> from tensorflow.keras.utils import get_file + keras.utils.get_gile -> get_file
-
-
->>> Output has to be of shape (256,256,13) #13 the number of classes
--> Idea each color of the original image has to be shape to one of the 13 dimensions : examples blue = [1,0,0,0,0,...]
-                    purple = [0,1,0,0...]
+Learned to use bins in order to change the classic image form [256,256,3] to [256,256,n_class] with the n_class = 13.
+Used bins in order to attribute a class to each pixel.
+Used multiple_gpu to train the model.

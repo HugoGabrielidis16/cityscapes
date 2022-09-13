@@ -6,7 +6,7 @@ class Config:
     criterion = "Adam"
     ENCODER = "resnet50"
     ENCODER_WEIGHTS = "imagenet"
-    learning_rate = "3e-4"
+    learning_rate = 3e-4
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
