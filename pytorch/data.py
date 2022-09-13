@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from torch.utils.data import DataLoader
 import os
@@ -38,7 +39,7 @@ class CityScapeDataset:
             img = img / 255
 
         if self.transform != None:
-            img = self.transform(img)
+            img = self.transform(img=img)
 
         img = torch.Tensor(img)
         new_mask = torch.Tensor(new_mask)
@@ -64,6 +65,13 @@ class CityScapeDataModule:
         self.preprocessing_fn = smp.encoders.get_preprocessing_fn(
             config.ENCODER, config.ENCODER_WEIGHTS
         )
+        self.transform = A.Compose(
+            [
+                A.HorizontalFlip(),
+                A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+                ToTensorV2(),
+            ]
+        )
 
     def setup(self):
         self.train_path, self.test_path = train_test_split(
@@ -72,14 +80,9 @@ class CityScapeDataModule:
 
     def train_loader(self):
         train_ds = CityScapeDataset(
-            self.train_path,
-            transform=A.Compose(
-                [
-                    A.HorizontalFlip(),
-                    A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-                    ToTensorV2(),
-                ]
-            ),
+            folder=self.train_path,
+            transform=self.transform,
+            preprocessing=None,
         )
         return DataLoader(
             train_ds,
@@ -89,7 +92,9 @@ class CityScapeDataModule:
 
     def test_loader(self):
         test_ds = CityScapeDataset(
-            self.test_path,
+            folder=self.test_path,
+            transform=self.transform,
+            preprocessing=None,
         )
         return DataLoader(
             test_ds,
