@@ -20,10 +20,10 @@ class Trainer:
         best_loss = 500000
         for epoch in range(epochs):
             print(f"Epoch : {epoch}")
-            start_time = time.time()
+            start_time = time()
             train_loss = self.train_(epoch)
             val_loss = self.val_()
-            end_time = time.time()
+            end_time = time()
             print(
                 f" Epoch : {epoch}/{epochs} - train_loss : {train_loss} - val_loss : {val_loss} - Taken time : {end_time - start_time}s"
             )
