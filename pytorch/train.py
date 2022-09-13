@@ -30,4 +30,4 @@ if __name__ == "__main__":
         precision=16,
         callbacks=[checkpoint_callback],
     )
-    trainer.fit(model)
+    trainer.fit(model, train_loader, test_loader)
