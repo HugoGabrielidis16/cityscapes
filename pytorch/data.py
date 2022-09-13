@@ -88,6 +88,7 @@ class CityScapeDataModule:
             train_ds,
             batch_size=self.batch_size,
             num_workers=multiprocessing.cpu_count() // 4,
+            persistent_workers=True,
         )
 
     def test_loader(self):
@@ -100,6 +101,7 @@ class CityScapeDataModule:
             test_ds,
             batch_size=self.batch_size,
             num_workers=multiprocessing.cpu_count() // 4,
+            persistent_workers=True,
         )
 
 
