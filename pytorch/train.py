@@ -30,4 +30,4 @@ if __name__ == "__main__":
         criterion=DiceLoss,
         device=config.device,
     )
-    trainer.fit(100)
+    trainer.fit(200)
