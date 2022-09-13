@@ -21,13 +21,31 @@ class UNET_RESNET(pl.LightningModule):
         self.metrics = torchmetrics.JaccardIndex(num_classes=classes)
         self.lr = 1e-3
 
+    def DiceLoss(self, inputs, targets):
+
+        # comment out if your model contains a sigmoid or equivalent activation layer
+        inputs = torch.sigmoid(inputs)
+
+        # flatten label and prediction tensors
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+
+        intersection = (inputs * targets).sum()
+        cardinality = torch.sum(inputs + targets)
+
+        dice = (2.0 * intersection) / (cardinality)
+
+        return 1 - dice
+
     def forward(self, x):
         mask = self.model(x)
         return mask
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer, gamma=0.1, step_size=20
+        )
         return [optimizer], [lr_scheduler]
 
     def training_step(self, batch, batch_idx):
@@ -48,22 +66,6 @@ class UNET_RESNET(pl.LightningModule):
         self.log("val_loss", loss, on_step=True, on_epoch=True, sync_dist=True)
         self.log("val_iou", iou, on_step=True, on_epoch=True, sync_dist=True)
         return loss
-
-    def DiceLoss(self, inputs, targets):
-
-        # comment out if your model contains a sigmoid or equivalent activation layer
-        inputs = torch.sigmoid(inputs)
-
-        # flatten label and prediction tensors
-        inputs = inputs.view(-1)
-        targets = targets.view(-1)
-
-        intersection = (inputs * targets).sum()
-        cardinality = torch.sum(inputs + targets)
-
-        dice = (2.0 * intersection) / (cardinality)
-
-        return 1 - dice
 
     def train_dataloader(self):
         return Module.train_loader()
