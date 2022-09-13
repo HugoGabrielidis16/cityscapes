@@ -1,15 +1,15 @@
-from function import give_color_to_seg_img
 import segmentation_models_pytorch as smp
-import torch.nn as nn
 import torch
-import matplotlib.pyplot as plt
 from config import config
 from torchsummary import summary
+from loss import DiceLoss
+
+import pytorch_lightning as pl
 
 
-class UNET_RESNET_without_pl(torch.nn.Module):
-    def __init__(self, in_channels, classes) -> None:
-        super(UNET_RESNET_without_pl, self).__init__()
+class UNET_RESNET(pl.LightningModule):
+    def __init__(self, in_channels=3, classes=13) -> None:
+        super(UNET_RESNET, self).__init__()
 
         self.model = smp.Unet(
             encoder_name=config.ENCODER,  # choose encoder, e.g. mobilenet_v2 or efficientnet-b7
@@ -18,27 +18,31 @@ class UNET_RESNET_without_pl(torch.nn.Module):
             classes=classes,
         )
 
+        self.loss = DiceLoss
+        self.lr = 1e-3
+
     def forward(self, x):
         mask = self.model(x)
         return mask
 
-    def show_image(self, mask, predicted_mask):
-        predicted = predicted_mask[
-            0
-        ].detach()  # Necesseray because we cant use numpy for tensor that have grad
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.encoder.parameters(), lr=self.lr)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)
+        return [optimizer], [lr_scheduler]
 
-        true_mask_example = give_color_to_seg_img(mask[0])
-        predicted_mask_example = give_color_to_seg_img(predicted)
+    def training_step(self, batch, batch_idx):
+        img, mask = batch
+        mask_pred = self(img)
+        loss = self.loss(mask, mask_pred)
+        return loss
 
-        plt.subplot(2, 1, 1)
-        plt.title("True mask")
-        plt.imshow(true_mask_example)
-        plt.subplot(2, 1, 2)
-        plt.imshow(predicted_mask_example)
-        plt.title("Predicted mask")
-        plt.show()
+    def validation_step(self, batch, batch_id):
+        img, mask = batch
+        mask_pred = self(img)
+        loss = self.loss(mask, mask_pred)
+        return loss
 
 
 if __name__ == "__main__":
-    model = UNET_RESNET_without_pl(3, 13)
+    model = UNET_RESNET(3, 13)
     summary(model, (3, 224, 224))
