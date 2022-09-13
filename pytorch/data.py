@@ -28,24 +28,23 @@ class CityScapeDataset:
     def __getitem__(self, idx):
         img, mask = loadImage(self.folder[idx])
 
+        img = img / 255
+
         mask_binned = bin_image(mask)
         new_mask = getSegmentationArr(
             mask_binned, self.N_CLASSES, WIDTH=self.WIDTH, HEIGHT=self.HEIGHT
         )
-
+        """ 
         if self.preprocessing != None:
             img = self.preprocessing(img)
-        else:
-            img = img / 255
+        """
+        """ if self.transform != None:
+            transformed = self.transform(image=np.array(img), mask=np.array(new_mask))
+            img = transformed["image"]
+            new_mask = transformed["mask"] """
 
-        if self.transform != None:
-            img = self.transform(img=img)
-
-        img = torch.Tensor(img)
-        new_mask = torch.Tensor(new_mask)
-
-        img = img.view(3, 256, 256)
-        new_mask = new_mask.view(13, 256, 256)
+        img = torch.Tensor(img).view(3, 256, 256)
+        new_mask = torch.Tensor(new_mask).view(13, 256, 256)
         return img, new_mask
 
     def __len__(self):
@@ -67,6 +66,7 @@ class CityScapeDataModule:
         )
         self.transform = A.Compose(
             [
+                A.Resize(256, 256),
                 A.HorizontalFlip(),
                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
                 ToTensorV2(),
@@ -114,4 +114,5 @@ if __name__ == "__main__":
         img, mask = data
         print(img.shape)
         print(mask.shape)
+        show_some_images(img, mask)
         break
