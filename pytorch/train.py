@@ -23,7 +23,7 @@ if __name__ == "__main__":
         max_epochs=200,
         auto_lr_find=False,
         auto_scale_batch_size=False,
-        accelerator="auto",
+        accelerator="dp",
         precision=16,
         callbacks=[checkpoint_callback],
     )
