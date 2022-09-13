@@ -4,11 +4,11 @@ import torch
 class Config:
     wand = False
     criterion = "Adam"
-    ENCODER = "resnet34"
+    ENCODER = "resnet50"
     ENCODER_WEIGHTS = "imagenet"
     learning_rate = "3e-4"
 
-    device = "cuda:" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     number_of_gpus = torch.cuda.device_count()
 

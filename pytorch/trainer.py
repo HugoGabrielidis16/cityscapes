@@ -41,6 +41,7 @@ class Trainer:
             self.optimizer.zero_grad()  # need to initalize the grads to 0 for each batchs
 
             y_pred = self.model(x)
+            print(f"y_pred shape : {y_pred.shape}")
             loss = self.criterion(y_pred, y)
             print(f"Loss for batch {batch_id} : {loss}")
             loss.backward()

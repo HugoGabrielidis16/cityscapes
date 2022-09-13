@@ -14,7 +14,11 @@ if __name__ == "__main__":
     print("Available devices ", torch.cuda.device_count())
     print("Current cuda device ", torch.cuda.current_device())
 
-    model = torch.nn.DataParallel(model, gpu_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8])
+    if config.number_of_gpus > 1:
+        model = torch.nn.DataParallel(
+            model, gpu_ids=[i for i in range(torch.cuda.device_count())]
+        )
+        print("Using Multiple GPUs")
     model.to(config.device)
 
     optimizer = torch.optim.Adam(
