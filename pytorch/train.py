@@ -16,7 +16,7 @@ if __name__ == "__main__":
     print("Available devices ", torch.cuda.device_count())
     print("Current cuda device ", torch.cuda.current_device())
 
-    model = torch.nn.DataParallel(model)
+    model = torch.nn.DataParallel(model, gpu_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8])
     model.to(device)
 
     """ trainer = Trainer(
