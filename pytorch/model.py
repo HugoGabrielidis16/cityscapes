@@ -3,8 +3,6 @@ import segmentation_models_pytorch as smp
 from segmentation_models_pytorch.encoders import get_preprocessing_fn
 import torch.nn as nn
 import torch
-from loss import DiceLoss, IoULoss
-import torchmetrics
 import matplotlib.pyplot as plt
 from config import config
 from torchsummary import summary
@@ -45,6 +43,3 @@ class UNET_RESNET_without_pl(torch.nn.Module):
 if __name__ == "__main__":
     model = UNET_RESNET_without_pl(3, 13)
     summary(model, (3, 224, 224))
-
-    """ for params in model.parameters():
-        print(params) """
