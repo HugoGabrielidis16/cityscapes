@@ -10,6 +10,9 @@ import segmentation_models_pytorch as smp
 from config import config
 import multiprocessing
 
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
 
 class CityScapeDataset:
     def __init__(self, folder, transform=None, preprocessing=None):
@@ -69,7 +72,14 @@ class CityScapeDataModule:
 
     def train_loader(self):
         train_ds = CityScapeDataset(
-            self.train_path, preprocessing=self.preprocessing_fn
+            self.train_path,
+            transform=A.Compose(
+                [
+                    A.HorizontalFlip(),
+                    A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+                    ToTensorV2(),
+                ]
+            ),
         )
         return DataLoader(
             train_ds,
@@ -80,7 +90,6 @@ class CityScapeDataModule:
     def test_loader(self):
         test_ds = CityScapeDataset(
             self.test_path,
-            preprocessing=self.preprocessing_fn,
         )
         return DataLoader(
             test_ds,

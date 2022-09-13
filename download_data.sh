@@ -6,3 +6,4 @@ pip install torchsummary
 pip install seaborn
 pip install tqm
 pip install pytorch-lightning
+pip install albumentations
