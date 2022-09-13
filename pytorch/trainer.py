@@ -26,11 +26,10 @@ class Trainer:
             )
             if val_loss < best_loss:
                 print("Saving best model")
-                torch.save(self.model.state_dict(), "best_model.pt")
+                torch.save(self.model.state_dict(), "best_model.pth")
                 best_loss = val_loss
 
     def train_(self, epoch):
-        self.model.to(self.device)
         self.model.train()
         train_loss = 0
         for batch_id, data in enumerate(self.trainloader, 0):
@@ -44,21 +43,19 @@ class Trainer:
             loss.backward()
             self.optimizer.step()
             train_loss += loss.item()
-            if epoch % 10 == 0:
-                self.model.show_image(y, y_pred)
 
-        return train_loss
+        return train_loss / batch_id
 
     def val_(self):
         test_loss = 0
         self.model.eval()
         with torch.no_grad():
-            for batch_num, data in enumerate(self.testloader, 0):
+            for batch_id, data in enumerate(self.testloader, 0):
                 x, y = data[0].to(self.device), data[1].to(self.device)
                 y_pred = self.model(x)
                 loss = self.criterion(y_pred, y)
                 test_loss += loss.item()
-        return test_loss
+        return test_loss / batch_id
 
 
 def accuracy(y, y_pred):

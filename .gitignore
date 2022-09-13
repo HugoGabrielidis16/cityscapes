@@ -134,3 +134,4 @@ dmypy.json
 #Mine
 dataset/
 tf_save/
+pytorch/best_model.pt
