@@ -29,3 +29,4 @@ if __name__ == "__main__":
         callbacks=[checkpoint_callback],
     )
     trainer.fit(model, train_loader, test_loader)
+    torch.save(model.state_dict(), "model.pth")

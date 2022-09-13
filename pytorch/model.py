@@ -37,8 +37,8 @@ class UNET_RESNET(pl.LightningModule):
         loss = self.DiceLoss(mask_pred, mask)
 
         iou = self.metrics(mask_pred, mask.long())
-        self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
-        # self.log("train_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
+        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
+        self.log("train_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
         return loss
 
     def validation_step(self, batch, batch_id):
@@ -47,7 +47,7 @@ class UNET_RESNET(pl.LightningModule):
         loss = self.DiceLoss(mask_pred, mask)
         iou = self.metrics(mask_pred, mask.long())
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=False)
-        # self.log("val_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
+        self.log("val_iou", iou, on_step=False, on_epoch=True, prog_bar=False)
         return loss
 
     def DiceLoss(self, inputs, targets):
