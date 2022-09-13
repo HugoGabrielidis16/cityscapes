@@ -1,6 +1,5 @@
 from function import give_color_to_seg_img
 import segmentation_models_pytorch as smp
-from segmentation_models_pytorch.encoders import get_preprocessing_fn
 import torch.nn as nn
 import torch
 import matplotlib.pyplot as plt
