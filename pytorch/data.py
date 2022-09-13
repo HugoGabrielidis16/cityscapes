@@ -31,6 +31,8 @@ class CityScapeDataset:
 
         if self.preprocessing != None:
             img = self.preprocessing(img)
+        else:
+            img = img / 255
 
         if self.transform != None:
             img = self.transform(img)
@@ -55,7 +57,7 @@ class CityScapeDataModule:
             os.path.join(PATH, "train", str(i) + ".jpg")
             for i in tqdm(range(1, 2973))  # 2973
         ]
-        self.batch_size = 1
+        self.batch_size = config.batch_size
         self.preprocessing_fn = smp.encoders.get_preprocessing_fn(
             config.ENCODER, config.ENCODER_WEIGHTS
         )
@@ -90,3 +92,4 @@ if __name__ == "__main__":
         img, mask = data
         print(img.shape)
         print(mask.shape)
+        break
