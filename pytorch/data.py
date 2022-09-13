@@ -1,4 +1,3 @@
-import numpy as np
 import torch
 from torch.utils.data import DataLoader
 import os
@@ -9,6 +8,7 @@ import torch
 import matplotlib.pyplot as plt
 import segmentation_models_pytorch as smp
 from config import config
+import multiprocessing
 
 
 class CityScapeDataset:
@@ -71,13 +71,21 @@ class CityScapeDataModule:
         train_ds = CityScapeDataset(
             self.train_path, preprocessing=self.preprocessing_fn
         )
-        return DataLoader(train_ds, batch_size=self.batch_size)
+        return DataLoader(
+            train_ds,
+            batch_size=self.batch_size,
+            num_workers=multiprocessing.cpu_count() // 4,
+        )
 
     def test_loader(self):
-        test_ds = CityScapeDataset(self.test_path, preprocessing=self.preprocessing_fn)
+        test_ds = CityScapeDataset(
+            self.test_path,
+            preprocessing=self.preprocessing_fn,
+        )
         return DataLoader(
             test_ds,
             batch_size=self.batch_size,
+            num_workers=multiprocessing.cpu_count() // 4,
         )
 
 
