@@ -13,6 +13,7 @@ if __name__ == "__main__":
     test_loader = Module.test_loader()
     model = UNET_RESNET_without_pl(3, 13)  # 3 in channel, 13 out
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    print("Device used : " + device)
     model = torch.nn.DataParallel(model)
     model.to(device)
 
@@ -36,4 +37,4 @@ if __name__ == "__main__":
         criterion=DiceLoss,
         device=device,
     )
-    trainer.fit(50)
+    trainer.fit(100)
