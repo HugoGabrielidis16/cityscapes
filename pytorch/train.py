@@ -19,8 +19,6 @@ if __name__ == "__main__":
 
     trainer = Trainer(
         max_epochs=200,
-        auto_lr_find=False,
-        auto_scale_batch_size=False,
         accelerator="dp",
         precision=16,
         callbacks=[checkpoint_callback],
