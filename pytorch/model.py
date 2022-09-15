@@ -4,7 +4,6 @@ from config import config
 from torchsummary import summary
 import torchmetrics
 import pytorch_lightning as pl
-from data import Module
 
 
 class UNET_RESNET(pl.LightningModule):
@@ -56,25 +55,15 @@ class UNET_RESNET(pl.LightningModule):
         mask_pred = self(img)
         loss = self.DiceLoss(mask_pred, mask)
 
-        iou = self.metrics(mask_pred, mask.long())
         self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
-        self.log("train_iou", iou, on_step=True, on_epoch=True, sync_dist=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         img, mask = batch
         mask_pred = self(img)
         loss = self.DiceLoss(mask_pred, mask)
-        iou = self.metrics(mask_pred, mask.long())
         self.log("val_loss", loss, on_step=True, on_epoch=True, sync_dist=True)
-        self.log("val_iou", iou, on_step=True, on_epoch=True, sync_dist=True)
         return loss
-
-    def train_dataloader(self):
-        return Module.train_loader()
-
-    def val_dataloader(self):
-        return Module.test_loader()
 
 
 if __name__ == "__main__":
