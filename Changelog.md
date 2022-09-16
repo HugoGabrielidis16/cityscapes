@@ -16,3 +16,12 @@ It seems to train on pytorch but the results are not so great -> looks into para
 
 2nd commit :
 Correction of a minor bugs : didn't returned anythings on the test_loader function of the Module
+
+
+# 15 septembre 2022
+
+Try to add data augmentation
+Use the preprocessing function from the model
+use more num_workers to load the data faster, num_worker = 8 maybe 
+
+(If doesnt work use a more complex model )

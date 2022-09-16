@@ -102,12 +102,10 @@ class CityScapeDataModule:
         )
 
 
-PATH = "../dataset"
-# PATH = "dataset"
-Module = CityScapeDataModule(PATH, config.batch_size)
-Module.setup()
-
 if __name__ == "__main__":
+    PATH = "../dataset"
+    Module = CityScapeDataModule(PATH, config.batch_size)
+    Module.setup()
     train_loader = Module.train_loader()
     for idx, data in enumerate(train_loader):
         img, mask = data
