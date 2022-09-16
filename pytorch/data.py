@@ -86,8 +86,7 @@ class CityScapeDataModule:
         return DataLoader(
             train_ds,
             batch_size=self.batch_size,
-            num_workers=8,
-            persistent_workers=True,
+            num_workers=config.num_workers,
         )
 
     def test_loader(self):
@@ -98,7 +97,7 @@ class CityScapeDataModule:
         return DataLoader(
             test_ds,
             batch_size=self.batch_size,
-            num_workers=8,
+            num_workers=config.num_workers,
         )
 
 
